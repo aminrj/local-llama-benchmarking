@@ -8,6 +8,19 @@ RESULTS_DIR="${REPO_DIR}/results"
 API_PORT=8081
 SERVER_PID=""
 
+# Auto-discover llama.cpp binaries
+for candidate in \
+    "${REPO_DIR}/../llama.cpp/build/bin" \
+    "${HOME}/llama.cpp/build/bin" \
+    "${HOME}/git/llama.cpp/build/bin" \
+    "/usr/local/bin" \
+; do
+    if [ -x "${candidate}/llama-bench" ] && [ -x "${candidate}/llama-server" ]; then
+        export PATH="${candidate}:${PATH}"
+        break
+    fi
+done
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
