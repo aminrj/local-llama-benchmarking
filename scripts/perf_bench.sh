@@ -49,16 +49,8 @@ for name, info in config.get('models', {}).items():
 " 2>/dev/null || { error "Failed to parse ${CONFIG}"; exit 1; }
 }
 
-stop_server() {
-    if command -v llama-server &>/dev/null; then
-        local pids
-        pids=$(lsof -ti:${API_PORT} 2>/dev/null || true)
-        if [ -n "${pids}" ]; then
-            info "Stopping existing llama-server on port ${API_PORT}..."
-            echo "${pids}" | xargs kill 2>/dev/null || true
-            sleep 2
-        fi
-    fi
+server_is_running() {
+    curl -s "http://127.0.0.1:${API_PORT}/health" &>/dev/null
 }
 
 start_server() {
@@ -162,8 +154,6 @@ main() {
 
     local filter_model="${1:-}"
 
-    stop_server
-
     local models
     models=$(get_models)
 
@@ -172,19 +162,32 @@ main() {
         exit 1
     fi
 
+    # Check if a server is already running (e.g. from 'codemode')
+    local server_was_preexisting=false
+    if server_is_running; then
+        info "llama-server already running on port ${API_PORT} — reusing it."
+        server_was_preexisting=true
+    fi
+
     while IFS='|' read -r name path api_model; do
         if [ -n "${filter_model}" ] && [ "${name}" != "${filter_model}" ]; then
             continue
         fi
-        if start_server "${path}"; then
+
+        if [ "${server_was_preexisting}" = true ]; then
+            # Reuse existing server — only run the benchmark
             run_perf_bench "${name}" "${path}" || true
-            # Stop server after each model
-            if [ -n "${SERVER_PID}" ] && kill -0 "${SERVER_PID}" 2>/dev/null; then
-                kill "${SERVER_PID}" 2>/dev/null || true
-                wait "${SERVER_PID}" 2>/dev/null || true
-                SERVER_PID=""
+        else
+            # Start our own server, bench, then clean up
+            if start_server "${path}"; then
+                run_perf_bench "${name}" "${path}" || true
+                if [ -n "${SERVER_PID}" ] && kill -0 "${SERVER_PID}" 2>/dev/null; then
+                    kill "${SERVER_PID}" 2>/dev/null || true
+                    wait "${SERVER_PID}" 2>/dev/null || true
+                    SERVER_PID=""
+                fi
+                sleep 1
             fi
-            sleep 1
         fi
     done <<< "${models}"
 
