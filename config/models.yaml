@@ -1,7 +1,8 @@
 # Model registry — add or remove models here.
 # Each model needs a local GGUF path and a llama-server model tag.
+# Place GGUF files in ~/models/ and run ./scripts/discover_models.sh --sync
 models:
   qwen3.6-35b:
-    path: "/usr/share/ollama/.ollama/models/Qwen3.6-35B-A3B/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf"
+    path: "~/models/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf"
     api_model: "qwen3.6-35b-a3b-gpu:latest"
     quant: "Q4_K_XL"
