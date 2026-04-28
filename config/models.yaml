@@ -1,0 +1,11 @@
+# Model registry — add or remove models here.
+# Each model needs a local GGUF path and a llama-server model tag.
+models:
+  qwen3.6-35b:
+    path: "~/models/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf"
+    api_model: "qwen3.6-35b-a3b-gpu:latest"
+    quant: "Q4_K_XL"
+  qwen2.5-coder-7b:
+    path: "~/models/Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf"
+    api_model: "qwen2.5-coder-7b-gpu:latest"
+    quant: "Q4_K_M"

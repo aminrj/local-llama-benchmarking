@@ -1,0 +1,5 @@
+lm-eval>=0.4.0
+bigcode-eval>=0.3.0
+pandas>=2.0.0
+pyyaml>=6.0
+rich>=13.0.0

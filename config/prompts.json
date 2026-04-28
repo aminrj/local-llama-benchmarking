@@ -1,0 +1,7 @@
+[
+  "Write a Python function that takes a list of integers and returns the two numbers that sum to a given target. Include type hints and docstring.",
+  "Write a FastMCP tool that scans a directory for files containing hardcoded API keys or secrets. Use regex to detect patterns like AWS keys, GitHub tokens, and generic API keys. Include proper error handling.",
+  "A context window is 128K tokens. Each token is approximately 0.75 bytes. How many megabytes is the full context window? If each page of a technical manual is 500 words and averages 4 words per token, how many pages fit in the context window?",
+  "Review this Python code for security vulnerabilities and list each one with a severity rating (HIGH/MEDIUM/LOW):\n\n```python\nimport os\nimport subprocess\n\ndef run_command(user_input):\n    result = subprocess.call('echo ' + user_input, shell=True)\n    env_var = os.environ.get('API_KEY')\n    return result\n```\n",
+  "Map the following OWASP Top 10 categories to agentic AI systems and provide one concrete mitigation for each:\n1. Injection → Agentic AI\n2. Broken Authentication → Agentic AI\n3. Sensitive Data Exposure → Agentic AI\n4. XXE → Agentic AI\n5. Broken Access Control → Agentic AI\n6. Security Misconfiguration → Agentic AI\n7. XSS → Agentic AI\n8. Insecure Deserialization → Agentic AI\n9. Known Vulnerabilities → Agentic AI\n10. Insufficient Logging → Agentic AI\n"
+]
