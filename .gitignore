@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Results (generated data, can be large)
+results/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local model paths (don't track actual model files)
+# Add specific model paths here if needed:
+# models/
+
+# Environment variables
+.env
+
+# Temporary files
+*.tmp
+*.log
