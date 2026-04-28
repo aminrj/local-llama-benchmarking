@@ -33,39 +33,38 @@ check_cmd jq
 install_llama_cpp() {
     local llama_cpp_dir="${LLAMA_CPP_DIR:-${SCRIPT_DIR}/../llama.cpp}"
 
+    # Check known build locations first
+    for candidate in \
+        "${llama_cpp_dir}/build/bin" \
+        "${llama_cpp_dir}/bin" \
+        "${llama_cpp_dir}" \
+    ; do
+        if [ -x "${candidate}/llama-bench" ] && [ -x "${candidate}/llama-server" ]; then
+            export PATH="${candidate}:${PATH}"
+            info "llama.cpp tools found at ${candidate}"
+            return 0
+        fi
+    done
+
+    # Check PATH
     if command -v llama-bench &>/dev/null && command -v llama-server &>/dev/null; then
         info "llama.cpp tools found in PATH"
         return 0
     fi
 
+    # Try to build from source
     if [ -d "${llama_cpp_dir}" ]; then
-        info "Found llama.cpp at ${llama_cpp_dir}, building..."
-        (cd "${llama_cpp_dir}" && make -j "$(nproc)" llama-bench llama-server 2>/dev/null || true)
-        export PATH="${llama_cpp_dir}:${PATH}"
-        if command -v llama-bench &>/dev/null && command -v llama-server &>/dev/null; then
-            info "llama.cpp tools built successfully"
-            return 0
-        fi
-    fi
-
-    if command -v git &>/dev/null; then
-        warn "llama.cpp not found. Cloning and building..."
-        local parent_dir
-        parent_dir="$(dirname "${llama_cpp_dir}")"
-        if [ ! -d "${parent_dir}/llama.cpp" ]; then
-            (cd "${parent_dir}" && git clone https://github.com/ggerganov/llama.cpp.git)
-        fi
-        (cd "${llama_cpp_dir}" && git pull 2>/dev/null || true)
-        (cd "${llama_cpp_dir}" && make -j "$(nproc)" llama-bench llama-server)
-        export PATH="${llama_cpp_dir}:${PATH}"
-        if command -v llama-bench &>/dev/null && command -v llama-server &>/dev/null; then
+        info "Found llama.cpp at ${llama_cpp_dir}, building with CMake..."
+        (cd "${llama_cpp_dir}" && cmake -B build -DLLAMA_CUDA=ON -DLLAMA_CURL=ON && cmake --build build -j"$(nproc)")
+        if [ -x "${llama_cpp_dir}/build/bin/llama-bench" ]; then
+            export PATH="${llama_cpp_dir}/build/bin:${PATH}"
             info "llama.cpp tools built successfully"
             return 0
         fi
     fi
 
     error "llama.cpp tools (llama-bench, llama-server) not available."
-    error "Please install llama.cpp or set LLAMA_CPP_DIR to its location."
+    error "Please set LLAMA_CPP_DIR to your llama.cpp build location."
     exit 1
 }
 
